@@ -1,0 +1,627 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTC — Mars Calendar</title>
+
+<style>
+:root {
+  --bg: #090909;
+  --panel: #151515;
+  --panel2: #202020;
+  --yellow: #f5d442;
+  --yellow2: #ffe875;
+  --text: #f4f4f4;
+  --muted: #929292;
+  --border: #343434;
+  --red: #ff6464;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+header {
+  padding: 22px 5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 5px;
+  color: var(--yellow);
+}
+
+.clock {
+  color: var(--yellow);
+  font-size: 19px;
+  font-variant-numeric: tabular-nums;
+}
+
+main {
+  max-width: 1300px;
+  margin: 35px auto;
+  padding: 0 20px;
+}
+
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: 1px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-top: 8px;
+  font-size: 13px;
+  letter-spacing: 2px;
+}
+
+.navigation {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+button, select, input, textarea {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 11px;
+  border-radius: 7px;
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  transition: .2s;
+}
+
+button:hover {
+  border-color: var(--yellow);
+  color: var(--yellow);
+}
+
+.primary {
+  background: var(--yellow);
+  color: #090909;
+  border: none;
+  font-weight: bold;
+}
+
+.primary:hover {
+  background: var(--yellow2);
+  color: #090909;
+}
+
+.calendar-panel, .side-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 20px;
+}
+
+.calendar-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.calendar-title h2 {
+  margin: 0;
+  color: var(--yellow);
+}
+
+.weekdays, .days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.weekday {
+  text-align: center;
+  color: var(--yellow);
+  font-size: 12px;
+  padding: 10px 0;
+}
+
+.day {
+  min-height: 82px;
+  padding: 10px;
+  background: #1d1d1d;
+  border: 1px solid #333;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.day:hover {
+  border-color: var(--yellow);
+}
+
+.day.selected {
+  border: 2px solid var(--yellow);
+  background: #39321a;
+}
+
+.day.empty {
+  background: transparent;
+  border-color: transparent;
+  cursor: default;
+}
+
+.day-number {
+  font-size: 16px;
+}
+
+.dot {
+  display: inline-block;
+  height: 7px;
+  width: 7px;
+  background: var(--yellow);
+  border-radius: 50%;
+  margin: 5px 3px 0 0;
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.side-panel h3 {
+  margin-top: 0;
+  color: var(--yellow);
+}
+
+.event {
+  background: #202020;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border-left: 3px solid var(--yellow);
+}
+
+.event strong {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.event small {
+  color: var(--muted);
+}
+
+.delete {
+  float: right;
+  color: var(--red);
+  background: transparent;
+  border: none;
+  padding: 3px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.empty-text {
+  color: var(--muted);
+}
+
+.tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+footer {
+  text-align: center;
+  color: var(--muted);
+  padding: 30px;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+@media(max-width: 800px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+
+  .day {
+    min-height: 58px;
+    padding: 6px;
+  }
+
+  .weekdays, .days {
+    gap: 4px;
+  }
+
+  .weekday {
+    font-size: 10px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">MTC / MARS</div>
+  <div class="clock" id="clock">00:00:00</div>
+</header>
+
+<main>
+
+<div class="top">
+  <div>
+    <h1>MARS CALENDAR</h1>
+    <div class="subtitle">PERSONAL TIME MANAGEMENT SYSTEM</div>
+  </div>
+
+  <div class="navigation">
+    <select id="year"></select>
+    <select id="month"></select>
+    <button onclick="moveMonth(-1)">←</button>
+    <button onclick="moveMonth(1)">→</button>
+  </div>
+</div>
+
+<div class="calendar-panel">
+
+  <div class="calendar-title">
+    <h2 id="monthTitle"></h2>
+    <span id="yearTitle" style="color:var(--muted)"></span>
+  </div>
+
+  <div class="weekdays" id="weekdays"></div>
+  <div class="days" id="days"></div>
+
+</div>
+
+<div class="content">
+
+  <section class="side-panel">
+    <h3 id="selectedTitle">SELECTED DAY</h3>
+    <div id="eventList"></div>
+  </section>
+
+  <section class="side-panel">
+    <h3>NEW TASK</h3>
+
+    <form id="eventForm">
+
+      <label>Назва справи</label>
+      <input id="eventName" placeholder="Введи назву..." required>
+
+      <label>Категорія</label>
+      <select id="category">
+        <option>Навчання</option>
+        <option>Робота</option>
+        <option>Спорт</option>
+        <option>Особисте</option>
+        <option>Важлива дата</option>
+        <option>Інше</option>
+      </select>
+
+      <label>Час</label>
+      <input id="eventTime" type="time">
+
+      <label>Пріоритет</label>
+      <select id="priority">
+        <option>Звичайний</option>
+        <option>Важливий</option>
+        <option>Терміновий</option>
+      </select>
+
+      <label>Нотатки</label>
+      <textarea id="notes" placeholder="Додаткова інформація..."></textarea>
+
+      <button class="primary" type="submit">+ ЗБЕРЕГТИ СПРАВУ</button>
+
+    </form>
+  </section>
+
+</div>
+
+<div class="tools">
+  <button onclick="exportData()">↓ ЕКСПОРТ ДАНИХ</button>
+  <button onclick="document.getElementById('importFile').click()">↑ ІМПОРТ ДАНИХ</button>
+  <input type="file" id="importFile" accept=".json" hidden>
+</div>
+
+</main>
+
+<footer>
+MTC — MARS COORDINATED TIME · EST. 2026
+</footer>
+
+<script>
+const months = [
+["Арен","АРН",30],["Велен","ВЕЛ",30],
+["Сорен","СОР",30],["Ларен","ЛАР",30],
+["Марен","МАР",30],["Тарен","ТАР",30],
+["Норен","НОР",30],["Елен","ЕЛЕ",30],
+["Корен","КОР",30],["Дарен","ДАР",30],
+["Равен","РАВ",30],["Мірен","МІР",30],
+["Солен","СОЛ",30],["Варен","ВАР",30],
+["Ренен","РЕН",30],["Кален","КАЛ",30],
+["Орлен","ОРЛ",30],["Савен","САВ",30],
+["Терен","ТЕР",30],["Лорен","ЛОР",30],
+["Навен","НАВ",29],["Зарен","ЗАР",29],
+["Фарен","ФАР",29]
+];
+
+const weekdays = [
+"Аурі","Велар","Сайрен","Норі",
+"Тавер","Елсар","Зорен"
+];
+
+let year = 39;
+let month = 0;
+let selectedDay = 1;
+
+let events = JSON.parse(
+localStorage.getItem("mtc_yellow_calendar_v1") || "{}"
+);
+
+const yearSelect = document.getElementById("year");
+const monthSelect = document.getElementById("month");
+
+for(let i=1;i<=100;i++){
+  yearSelect.add(new Option("MY "+i,i));
+}
+
+months.forEach((m,i)=>{
+  monthSelect.add(new Option(m[0],i));
+});
+
+weekdays.forEach(day=>{
+  const el=document.createElement("div");
+  el.className="weekday";
+  el.textContent=day;
+  document.getElementById("weekdays").appendChild(el);
+});
+
+function key(){
+  return `MY${year}_${month}_${selectedDay}`;
+}
+
+function monthStartDay(m){
+  return months.slice(0,m).reduce((s,x)=>s+x[2],0);
+}
+
+function render(){
+  yearSelect.value=year;
+  monthSelect.value=month;
+
+  document.getElementById("monthTitle").textContent=
+  months[month][0];
+
+  document.getElementById("yearTitle").textContent=
+  "MARS YEAR "+year;
+
+  const container=document.getElementById("days");
+  container.innerHTML="";
+
+  const offset=monthStartDay(month)%7;
+
+  for(let i=0;i<offset;i++){
+    const blank=document.createElement("div");
+    blank.className="day empty";
+    container.appendChild(blank);
+  }
+
+  for(let d=1;d<=months[month][2];d++){
+    const el=document.createElement("div");
+    el.className="day";
+
+    if(d===selectedDay) el.classList.add("selected");
+
+    const number=document.createElement("div");
+    number.className="day-number";
+    number.textContent=d;
+    el.appendChild(number);
+
+    if(events[`MY${year}_${month}_${d}`]?.length){
+      const dot=document.createElement("span");
+      dot.className="dot";
+      el.appendChild(dot);
+    }
+
+    el.onclick=()=>{
+      selectedDay=d;
+      render();
+    };
+
+    container.appendChild(el);
+  }
+
+  document.getElementById("selectedTitle").textContent=
+  `MY${year} / ${months[month][1]} / ${String(selectedDay).padStart(2,"0")}`;
+
+  renderEvents();
+}
+
+function renderEvents(){
+  const list=document.getElementById("eventList");
+  list.innerHTML="";
+
+  const items=events[key()]||[];
+
+  if(!items.length){
+    list.innerHTML='<p class="empty-text">На цей день справ поки немає.</p>';
+    return;
+  }
+
+  items.forEach((item,index)=>{
+    const el=document.createElement("div");
+    el.className="event";
+
+    const title=document.createElement("strong");
+    title.textContent=item.name;
+
+    const del=document.createElement("button");
+    del.className="delete";
+    del.textContent="✕";
+
+    del.onclick=()=>{
+      if(!confirm("Видалити цю справу?"))return;
+      items.splice(index,1);
+      save();
+      render();
+    };
+
+    const info=document.createElement("small");
+    info.textContent=
+    `${item.time||"Без часу"} · ${item.category} · ${item.priority}`;
+
+    const note=document.createElement("p");
+    note.textContent=item.notes;
+    note.style.color="var(--muted)";
+    note.style.fontSize="13px";
+
+    el.append(del,title,info,note);
+    list.appendChild(el);
+  });
+}
+
+function save(){
+  localStorage.setItem(
+    "mtc_yellow_calendar_v1",
+    JSON.stringify(events)
+  );
+}
+
+document.getElementById("eventForm").onsubmit=e=>{
+  e.preventDefault();
+
+  if(!events[key()])events[key()]=[];
+
+  events[key()].push({
+    name:document.getElementById("eventName").value,
+    category:document.getElementById("category").value,
+    time:document.getElementById("eventTime").value,
+    priority:document.getElementById("priority").value,
+    notes:document.getElementById("notes").value
+  });
+
+  save();
+  e.target.reset();
+  render();
+};
+
+function moveMonth(direction){
+  month+=direction;
+
+  if(month>22){month=0;year++;}
+  if(month<0){month=22;year--;}
+
+  year=Math.max(1,Math.min(100,year));
+  selectedDay=1;
+  render();
+}
+
+yearSelect.onchange=()=>{
+  year=Number(yearSelect.value);
+  selectedDay=1;
+  render();
+};
+
+monthSelect.onchange=()=>{
+  month=Number(monthSelect.value);
+  selectedDay=1;
+  render();
+};
+
+function exportData(){
+  const blob=new Blob(
+    [JSON.stringify(events,null,2)],
+    {type:"application/json"}
+  );
+
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="MTC-yellow-backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.getElementById("importFile").onchange=e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+
+  const reader=new FileReader();
+
+  reader.onload=()=>{
+    try{
+      const imported=JSON.parse(reader.result);
+
+      if(!imported || typeof imported!=="object" ||
+      Array.isArray(imported))throw new Error();
+
+      if(!confirm("Замінити поточні записи резервною копією?"))return;
+
+      events=imported;
+      save();
+      render();
+      alert("Дані успішно завантажено!");
+    }catch{
+      alert("Помилка імпорту файлу.");
+    }
+  };
+
+  reader.readAsText(file);
+};
+
+function updateClock(){
+  document.getElementById("clock").textContent=
+  new Date().toLocaleTimeString("uk-UA");
+}
+
+setInterval(updateClock,1000);
+updateClock();
+render();
+</script>
+
+</body>
+</html>
