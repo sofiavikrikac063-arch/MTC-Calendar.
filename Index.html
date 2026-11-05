@@ -1,0 +1,352 @@
+
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTC — Mars Time</title>
+
+<style>
+:root {
+  --bg: #080808;
+  --panel: #151515;
+  --panel2: #202020;
+  --yellow: #f5d442;
+  --yellow2: #ffe875;
+  --text: #f4f4f4;
+  --muted: #929292;
+  --border: #343434;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 850px;
+}
+
+.top {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.logo {
+  color: var(--yellow);
+  letter-spacing: 7px;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-top: 10px;
+}
+
+.clock-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 45px 20px;
+  text-align: center;
+  box-shadow: 0 0 40px #f5d4420b;
+}
+
+.clock {
+  font-size: clamp(55px, 12vw, 105px);
+  font-weight: bold;
+  letter-spacing: 3px;
+  color: var(--yellow);
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-label {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-top: 12px;
+}
+
+.date-box {
+  margin-top: 20px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.date-title {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+}
+
+.mars-date {
+  color: var(--yellow);
+  font-size: clamp(23px, 5vw, 36px);
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.full-date {
+  color: var(--text);
+  margin-top: 12px;
+  font-size: 17px;
+}
+
+.season {
+  color: var(--yellow2);
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.info {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+}
+
+.info-label {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.info-value {
+  color: var(--yellow);
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.note {
+  margin-top: 25px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+@media (max-width: 500px) {
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <div class="top">
+    <div class="logo">MTC SYSTEM</div>
+    <div class="subtitle">MARS COORDINATED TIME</div>
+  </div>
+
+  <div class="clock-box">
+    <div class="clock" id="clock">00:00:00</div>
+    <div class="clock-label">MTC — 24 HOUR CLOCK</div>
+  </div>
+
+  <div class="date-box">
+    <div class="date-title">CURRENT MARTIAN DATE</div>
+    <div class="mars-date" id="marsDate">MY39 / АРН / 01 / АУР</div>
+    <div class="full-date" id="fullDate">—</div>
+    <div class="season" id="season">—</div>
+  </div>
+
+  <div class="info-grid">
+    <div class="info">
+      <div class="info-label">NEXT DATE BEGINS</div>
+      <div class="info-value" id="countdown">—</div>
+    </div>
+
+    <div class="info">
+      <div class="info-label">TIME SYNCHRONIZATION</div>
+      <div class="info-value">DEVICE LOCAL TIME</div>
+    </div>
+
+    <div class="info">
+      <div class="info-label">MARS REFERENCE MERIDIAN</div>
+      <div class="info-value">AIRY-0</div>
+    </div>
+
+    <div class="info">
+      <div class="info-label">DAY START</div>
+      <div class="info-value">05:00</div>
+    </div>
+  </div>
+
+  <div class="note">
+    MTC PERSONAL CALENDAR SYSTEM<br>
+    The clock continues normally. Only the calendar date changes at 05:00.
+  </div>
+
+</div>
+
+<script>
+const MONTHS = [
+  {name:"Арен", code:"АРН", days:30},
+  {name:"Велен", code:"ВЕЛ", days:30},
+  {name:"Сорен", code:"СОР", days:30},
+  {name:"Ларен", code:"ЛАР", days:30},
+  {name:"Марен", code:"МАР", days:30},
+  {name:"Тарен", code:"ТАР", days:30},
+  {name:"Норен", code:"НОР", days:30},
+  {name:"Елен", code:"ЕЛЕ", days:30},
+  {name:"Корен", code:"КОР", days:30},
+  {name:"Дарен", code:"ДАР", days:30},
+  {name:"Равен", code:"РАВ", days:30},
+  {name:"Мірен", code:"МІР", days:30},
+  {name:"Солен", code:"СОЛ", days:30},
+  {name:"Варен", code:"ВАР", days:30},
+  {name:"Ренен", code:"РЕН", days:30},
+  {name:"Кален", code:"КАЛ", days:30},
+  {name:"Орлен", code:"ОРЛ", days:30},
+  {name:"Савен", code:"САВ", days:30},
+  {name:"Терен", code:"ТЕР", days:30},
+  {name:"Лорен", code:"ЛОР", days:30},
+  {name:"Навен", code:"НАВ", days:29},
+  {name:"Зарен", code:"ЗАР", days:29},
+  {name:"Фарен", code:"ФАР", days:29}
+];
+
+const WEEKDAYS = [
+  {name:"Аурі", code:"АУР"},
+  {name:"Велар", code:"ВЕЛ"},
+  {name:"Сайрен", code:"САЙ"},
+  {name:"Норі", code:"НОР"},
+  {name:"Тавер", code:"ТАВ"},
+  {name:"Елсар", code:"ЕЛС"},
+  {name:"Зорен", code:"ЗОР"}
+];
+
+const DAY_MS = 86400000;
+const YEAR_LENGTH = 687;
+
+// Початок MY39 — 30 вересня 2026 року
+const EPOCH = Date.UTC(2026, 8, 30);
+
+function pad(value) {
+  return String(value).padStart(2, "0");
+}
+
+function getMarsDate(now) {
+  // Віднімаємо 5 годин ТІЛЬКИ для визначення календарної дати.
+  // Сам годинник не змінюється.
+  const shifted = new Date(now.getTime() - 5 * 60 * 60 * 1000);
+
+  const currentDay = Date.UTC(
+    shifted.getFullYear(),
+    shifted.getMonth(),
+    shifted.getDate()
+  );
+
+  const elapsedDays = Math.floor((currentDay - EPOCH) / DAY_MS);
+
+  const year = 39 + Math.floor(elapsedDays / YEAR_LENGTH);
+  const dayOfYear = ((elapsedDays % YEAR_LENGTH) + YEAR_LENGTH)
+                    % YEAR_LENGTH + 1;
+
+  let remaining = dayOfYear;
+  let month = MONTHS[0];
+
+  for (const item of MONTHS) {
+    if (remaining <= item.days) {
+      month = item;
+      break;
+    }
+    remaining -= item.days;
+  }
+
+  const weekday = WEEKDAYS[(dayOfYear - 1) % 7];
+
+  let season;
+
+  if (dayOfYear <= 198) {
+    season = "Весна";
+  } else if (dayOfYear <= 382) {
+    season = "Літо";
+  } else if (dayOfYear <= 529) {
+    season = "Осінь";
+  } else {
+    season = "Зима";
+  }
+
+  return {
+    year,
+    dayOfYear,
+    month,
+    dayOfMonth: remaining,
+    weekday,
+    season
+  };
+}
+
+function updateClock() {
+  const now = new Date();
+
+  // Годинник використовує місцевий час пристрою.
+  document.getElementById("clock").textContent =
+    `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+
+  const mars = getMarsDate(now);
+
+  document.getElementById("marsDate").textContent =
+    `MY${mars.year} / ${mars.month.code} / ${pad(mars.dayOfMonth)} / ${mars.weekday.code}`;
+
+  document.getElementById("fullDate").textContent =
+    `${mars.month.name} ${mars.dayOfMonth} · ${mars.weekday.name}`;
+
+  document.getElementById("season").textContent =
+    `Сезон: ${mars.season}`;
+
+  // Наступна межа календарної доби — 05:00 місцевого часу.
+  const nextBoundary = new Date(now);
+  nextBoundary.setHours(5, 0, 0, 0);
+
+  if (now >= nextBoundary) {
+    nextBoundary.setDate(nextBoundary.getDate() + 1);
+  }
+
+  const difference = Math.max(0, nextBoundary - now);
+
+  const hours = Math.floor(difference / 3600000);
+  const minutes = Math.floor((difference % 3600000) / 60000);
+  const seconds = Math.floor((difference % 60000) / 1000);
+
+  document.getElementById("countdown").textContent =
+    `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+updateClock();
+setInterval(updateClock, 1000);
+</script>
+
+</body>
+</html>
